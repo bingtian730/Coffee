@@ -6,6 +6,10 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 public class Main extends Application {
 
     // Main UI components
@@ -15,12 +19,18 @@ public class Main extends Application {
     private TextField customerNameTextField;  // TextField for customer name
     private Button orderButton;
 
+    // List to store the orders (using Generics)
+    private List<CoffeeDrink> coffeeOrders;
+
     public static void main(String[] args) {
         launch(args);  // Launches the JavaFX application
     }
 
     @Override
     public void start(Stage primaryStage) {
+        // Initialize the list to store coffee orders
+        coffeeOrders = new ArrayList<>();
+
         // Step 1: Set the title for the main window (Stage)
         primaryStage.setTitle("Coffee Order App");
 
@@ -101,6 +111,9 @@ public class Main extends Application {
         
         // If the coffee is valid, create a new window to display the order summary
         if (coffee != null) {
+            // Add the coffee order to the list (Generics used here)
+            coffeeOrders.add(coffee);
+            
             // Prepare the order details and price
             String orderDetails = coffee.prepare();
             double price = coffee.calculatePrice();
@@ -171,5 +184,17 @@ public class Main extends Application {
 
         // Show the "Thank You" window
         thankYouStage.show();
+
+        // Optionally, print all the orders using an iterator
+        printAllOrders();
+    }
+
+    // Method to print all orders using an iterator
+    private void printAllOrders() {
+        Iterator<CoffeeDrink> iterator = coffeeOrders.iterator();
+        while (iterator.hasNext()) {
+            CoffeeDrink coffee = iterator.next();
+            System.out.println(coffee.prepare() + " | Price: $" + coffee.calculatePrice());
+        }
     }
 }
