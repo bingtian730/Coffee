@@ -13,7 +13,6 @@ public class Main extends Application {
     private ComboBox<String> sizeComboBox;
     private ComboBox<String> milkComboBox;
     private Button orderButton;
-    private Label orderDetailsLabel;
 
     public static void main(String[] args) {
         launch(args);  // Launches the JavaFX application
@@ -40,8 +39,6 @@ public class Main extends Application {
         orderButton = new Button("Place Order");
         orderButton.setOnAction(e -> placeOrder());
 
-        orderDetailsLabel = new Label();
-
         // Step 3: Layout setup (VBox is a layout that arranges components vertically)
         VBox layout = new VBox(10);  // Vertical box with 10px spacing between items
         layout.setPadding(new javafx.geometry.Insets(20));  // Add padding around the VBox
@@ -49,7 +46,7 @@ public class Main extends Application {
                 new Label("Select Coffee Type:"), coffeeTypeComboBox,
                 new Label("Select Size:"), sizeComboBox,
                 new Label("Select Milk Type:"), milkComboBox,
-                orderButton, orderDetailsLabel
+                orderButton
         );
 
         // Step 4: Create a Scene using the layout (VBox)
@@ -82,11 +79,38 @@ public class Main extends Application {
                 break;
         }
         
-        // Display order details
+        // If the coffee is valid, create a new window to display the order summary
         if (coffee != null) {
-            orderDetailsLabel.setText("Your order: " + coffee.prepare());
+            // Prepare the order details and price
+            String orderDetails = coffee.prepare();
+            double price = coffee.calculatePrice();
+            String orderSummary = orderDetails + "\nTotal Price: $" + String.format("%.2f", price);
+
+            // Create a new window (Stage) for the order summary
+            Stage summaryStage = new Stage();
+            summaryStage.setTitle("Order Summary");
+
+            // Create a Label to show the order summary
+            Label summaryLabel = new Label(orderSummary);
+            
+            // Set up layout for the new window
+            VBox summaryLayout = new VBox(10);
+            summaryLayout.setPadding(new javafx.geometry.Insets(20));
+            summaryLayout.getChildren().addAll(summaryLabel);
+
+            // Create and set the Scene for the new window
+            Scene summaryScene = new Scene(summaryLayout, 300, 200);
+            summaryStage.setScene(summaryScene);
+
+            // Show the new window
+            summaryStage.show();
         } else {
-            orderDetailsLabel.setText("Error: Invalid coffee type.");
+            // Handle the error if the coffee type is invalid (shouldn't happen in this case)
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Invalid coffee type");
+            alert.setContentText("Please select a valid coffee type.");
+            alert.showAndWait();
         }
     }
 }
